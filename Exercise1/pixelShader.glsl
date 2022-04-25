@@ -7,4 +7,3 @@ out vec4 outColor;
 void main() {
     outColor = dot(lightDirection, normal)*inColor;
 }
-

@@ -1,3 +1,4 @@
 .idea
-Exercise1.pdf
+*.pdf
+*.html
 venv

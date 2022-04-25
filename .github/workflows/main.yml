@@ -1,0 +1,16 @@
+name: GH-Pages deploy
+
+on: push
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: make html
+      - run: mkdir output && cp index.html styling.css output
+      - uses: peaceiris/actions-gh-pages@v3
+        name: Deploy
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: output

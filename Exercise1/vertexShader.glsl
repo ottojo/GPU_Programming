@@ -6,5 +6,6 @@ out vec3 normal;
 
 void main() {
     normal = sNormal;
-    //TODO - Add the vertex transformation
+    // Model space -> world space -> view space -> projection space
+    gl_Position = worldViewProjMatrix * sPos;
 }
