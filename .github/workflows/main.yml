@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: sudo apt-get install -y pandoc
       - run: make html
       - run: mkdir output && cp index.html styling.css output
       - uses: peaceiris/actions-gh-pages@v3
