@@ -118,8 +118,9 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb1-1"><a href="
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="fu">main</span><span class="op">()</span> <span class="op">{</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    normal <span class="op">=</span> sNormal<span class="op">;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">gl_Position</span> <span class="op">=</span> worldViewProjMatrix <span class="op">*</span> sPos<span class="op">;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Model space -&gt; world space -&gt; view space -&gt; projection space</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">gl_Position</span> <span class="op">=</span> worldViewProjMatrix <span class="op">*</span> sPos<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h2 id="shader-description">Shader description</h2>
 <p>The lecture example computed a color for each vertex by scaling the
 input color with the dot product of the light direction and the vertex
