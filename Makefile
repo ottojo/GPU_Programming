@@ -11,3 +11,6 @@ html: styling.css
 
 pdf-1:
 	pandoc Exercise1/pdf_header.md Exercise1/exercise1.md -o exercise1.pdf $(PANDOC_PDF_OPTIONS)
+
+clean:
+	rm -f exercise1.pdf index.html

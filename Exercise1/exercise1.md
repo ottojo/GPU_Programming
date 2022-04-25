@@ -13,6 +13,7 @@ out vec3 normal;
 
 void main() {
     normal = sNormal;
+    // Model space -> world space -> view space -> projection space
     gl_Position = worldViewProjMatrix * sPos;
 }
 ```
