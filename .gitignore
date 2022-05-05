@@ -1,3 +1,4 @@
 index.html
 *.pdf
 styling.css
+__pycache__
