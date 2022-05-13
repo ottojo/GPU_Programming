@@ -154,8 +154,8 @@ class Exc3(WindowInterface):
         self.lastRotated_ = False
         self.mouse = (0.0, 0.0)
         
-        diffImg = Image.open(local('textures', 'ground.jpg')).convert('RGB').transpose(Image.FLIP_TOP_BOTTOM)
-        diffImg_grass = Image.open(local('textures', 'grass_small.png')).convert('RGBA').transpose(Image.FLIP_TOP_BOTTOM)
+        diffImg = Image.open(local('textures', 'ground.jpg')).convert('RGB').transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+        diffImg_grass = Image.open(local('textures', 'grass_small.png')).convert('RGBA').transpose(Image.Transpose.FLIP_TOP_BOTTOM)
 
         self.diffTexture = self.ctx.texture(diffImg.size, 3, diffImg.tobytes())
         self.diffTexture_grass = self.ctx.texture(diffImg_grass.size, 4, diffImg_grass.tobytes())
