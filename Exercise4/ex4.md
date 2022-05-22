@@ -1,3 +1,33 @@
+# Exercise 4
+
+## 1: Blinn-Phong Shading
+An improved result is achieved by moving the lighting calculation from the
+vertex shader to the fragment shader, interpolating normal and position instead
+of color.
+
+Vertex Shader:
+```glsl
+#version 150
+
+uniform mat4 worldViewMatrix;
+uniform mat4 ProjMatrix;
+
+in vec4 sPos;
+in vec3 sNormal;
+
+out vec3 position;
+out vec3 normal;
+
+void main() {
+  position = sPos.xyz;
+  normal = sNormal;
+
+  gl_Position = ProjMatrix * worldViewMatrix * sPos;
+}
+```
+
+Fragment Shader:
+```glsl
 #version 150
 
 uniform vec3 lightPosition;
@@ -21,3 +51,4 @@ void main() {
   vec4 specular = pow(dot(hVec, normalizedNormal), 64.0) * vec4(1.0);
   outColor = ambient + diffuse + specular;
 }
+```
