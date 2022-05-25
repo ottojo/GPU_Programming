@@ -12,11 +12,16 @@ out vec4 outColor;
 
 void main() {
   vec3 normalizedLightDir = normalize(lightPosition - position);
+  float dist = length(lightPosition - position);
   vec3 normalizedNormal = normalize(normal);
 
   vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0);
-  vec4 diffuse =
-      dot(normalizedLightDir, normalizedNormal) * inObjColor * inLightColor;
+
+  float At_e = 0.15;
+  float fallof = 1 / exp(At_e * dist);
+
+  vec4 diffuse = dot(normalizedLightDir, normalizedNormal) * inObjColor *
+                 inLightColor * fallof;
   vec3 hVec = normalize(normalizedLightDir + normalize(camPos.xyz - position));
   vec4 specular = pow(dot(hVec, normalizedNormal), 64.0) * vec4(1.0);
   outColor = ambient + diffuse + specular;
