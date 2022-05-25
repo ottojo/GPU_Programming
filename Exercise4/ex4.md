@@ -101,6 +101,9 @@ if (dot(viewDirection, normalizedNormal) < 0.4) {
 }
 ```
 
+The color is set to zero if the test determines the pixel belongs to the
+silhouette.
+
 ```glsl
 #version 150
 
