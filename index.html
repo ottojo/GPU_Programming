@@ -103,6 +103,8 @@ description</a></li>
 <ul>
 <li><a href="#blinn-phong-shading" id="toc-blinn-phong-shading">1:
 Blinn-Phong Shading</a></li>
+<li><a href="#exponential-falloff" id="toc-exponential-falloff">2:
+Exponential falloff</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -197,5 +199,37 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb3-1"><a href="
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">vec4</span> specular <span class="op">=</span> <span class="bu">pow</span><span class="op">(</span><span class="bu">dot</span><span class="op">(</span>hVec<span class="op">,</span> normalizedNormal<span class="op">),</span> <span class="fl">64.0</span><span class="op">)</span> <span class="op">*</span> <span class="dt">vec4</span><span class="op">(</span><span class="fl">1.0</span><span class="op">);</span></span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  outColor <span class="op">=</span> ambient <span class="op">+</span> diffuse <span class="op">+</span> specular<span class="op">;</span></span>
 <span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="exponential-falloff">2: Exponential falloff</h2>
+<p>A <code>fallof</code> term was introduced with the required scaling
+factor. The falloff is multiplied with the existing Lambertian
+reflection calculating in the diffuse lighting calculation:</p>
+<pre><code>#version 150
+
+uniform vec3 lightPosition;
+uniform vec4 inObjColor;
+uniform vec4 inLightColor;
+uniform vec3 camPos;
+
+in vec3 position;
+in vec3 normal;
+
+out vec4 outColor;
+
+void main() {
+  vec3 normalizedLightDir = normalize(lightPosition - position);
+  float dist = length(lightPosition - position);
+  vec3 normalizedNormal = normalize(normal);
+
+  vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0);
+
+  float At_e = 0.15;
+  float fallof = 1 / exp(At_e * dist);
+
+  vec4 diffuse = dot(normalizedLightDir, normalizedNormal) * inObjColor *
+                 inLightColor * fallof;
+  vec3 hVec = normalize(normalizedLightDir + normalize(camPos.xyz - position));
+  vec4 specular = pow(dot(hVec, normalizedNormal), 64.0) * vec4(1.0);
+  outColor = ambient + diffuse + specular;
+}</code></pre>
 </body>
 </html>
