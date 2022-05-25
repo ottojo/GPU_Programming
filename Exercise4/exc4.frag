@@ -25,4 +25,9 @@ void main() {
   vec3 hVec = normalize(normalizedLightDir + normalize(camPos.xyz - position));
   vec4 specular = pow(dot(hVec, normalizedNormal), 64.0) * vec4(1.0);
   outColor = ambient + diffuse + specular;
+
+  vec3 viewDirection = normalize(camPos.xyz - position);
+  if (dot(viewDirection, normalizedNormal) < 0.4) {
+    outColor = vec4(0, 0, 0, 0);
+  }
 }
