@@ -242,6 +242,8 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb5-1"><a href="
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> <span class="op">(</span><span class="bu">dot</span><span class="op">(</span>viewDirection<span class="op">,</span> normalizedNormal<span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.4</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  outColor <span class="op">=</span> <span class="dt">vec4</span><span class="op">(</span><span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The color is set to zero if the test determines the pixel belongs to
+the silhouette.</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#version 150</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
