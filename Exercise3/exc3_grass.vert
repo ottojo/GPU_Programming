@@ -36,7 +36,7 @@ float random(vec2 v) {
 void main() {
   texCoords = sTexCoords;
 
-  vec4 wind_direction = vec4(1, 0.0, 1, 0.0);
+  vec4 wind_direction = normalize(vec4(1, 0.0, 1, 0.0));
   float wind_amplitude = 0.04;
   float wind_speed = 0.5;
   float wind_wavelength = 0.5;
