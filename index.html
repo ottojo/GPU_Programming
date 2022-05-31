@@ -107,6 +107,12 @@ Blinn-Phong Shading</a></li>
 Exponential falloff</a></li>
 <li><a href="#silhouette" id="toc-silhouette">3: Silhouette</a></li>
 </ul></li>
+<li><a href="#exercise-5" id="toc-exercise-5">Exercise 5</a>
+<ul>
+<li><a href="#normal-computation" id="toc-normal-computation">Normal
+computation</a></li>
+<li><a href="#shadows" id="toc-shadows">Shadows</a></li>
+</ul></li>
 </ul>
 </nav>
 <h1 id="introduction">Introduction</h1>
@@ -278,5 +284,37 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb6-1"><a href="
 <span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    outColor <span class="op">=</span> <span class="dt">vec4</span><span class="op">(</span><span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
 <span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
 <span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h1 id="exercise-5">Exercise 5</h1>
+<h2 id="normal-computation">Normal computation</h2>
+<p>By calculating the partial derivatives of the world space position of
+the vertex, we obtain two vectors tangential to the model surface. Using
+the cross product, the surface normal is calculated:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Compute the normal</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> v1 <span class="op">=</span> <span class="bu">dFdx</span><span class="op">(</span>position<span class="op">);</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> v2 <span class="op">=</span> <span class="bu">dFdy</span><span class="op">(</span>position<span class="op">);</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> normalizedNormal <span class="op">=</span> <span class="bu">normalize</span><span class="op">(</span><span class="bu">cross</span><span class="op">(</span>v1<span class="op">,</span> v2<span class="op">));</span></span></code></pre></div>
+<h2 id="shadows">Shadows</h2>
+<p>First, the light direction is transformed to tangent space, with z=up
+instead of y=up:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Compute the transformation matrix to go from world space to tangent space.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">//  y and z cols/rows are switched compared to lecture, we want z=up</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="dt">mat3</span> transMat <span class="op">=</span> <span class="dt">mat3</span><span class="op">(</span>tangent<span class="op">.</span><span class="fu">x</span><span class="op">,</span>  binormal<span class="op">.</span><span class="fu">x</span><span class="op">,</span> normal<span class="op">.</span><span class="fu">x</span><span class="op">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                     tangent<span class="op">.</span><span class="fu">z</span><span class="op">,</span>  binormal<span class="op">.</span><span class="fu">z</span><span class="op">,</span> normal<span class="op">.</span><span class="fu">z</span><span class="op">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                     tangent<span class="op">.</span><span class="fu">y</span><span class="op">,</span>  binormal<span class="op">.</span><span class="fu">y</span><span class="op">,</span> normal<span class="op">.</span><span class="fu">y</span><span class="op">);</span></span></code></pre></div>
+<p>Then, a linear seach is performed along the light ray for geometry
+obsructing the path between light source and current position:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Compute the occlusion</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> occlusion <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">for</span><span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> MAX_ITERS<span class="op">;</span> i<span class="op">++){</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span><span class="op">(</span>curTexCoords<span class="op">.</span><span class="fu">z</span> <span class="op">&lt;</span> HEIGHT_SCALE <span class="op">*</span> <span class="bu">texture</span><span class="op">(</span>displTexture<span class="op">,</span> curTexCoords<span class="op">.</span><span class="fu">xy</span><span class="op">).</span><span class="fu">r</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Point below surface!</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        occlusion <span class="op">=</span> <span class="fl">0.1</span><span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">break</span><span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    curTexCoords <span class="op">+=</span> transLightDir <span class="op">*</span> DISPLACEMENT<span class="op">;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 </body>
 </html>
