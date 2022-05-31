@@ -2,3 +2,4 @@ moderngl
 numpy
 pyqt5
 Pillow
+PyOpenGL
