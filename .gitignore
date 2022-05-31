@@ -4,3 +4,4 @@ styling.css
 __pycache__
 .venv
 *.zip
+*.pyc
