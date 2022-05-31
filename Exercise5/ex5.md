@@ -24,7 +24,7 @@ mat3 transMat = mat3(tangent.x,  binormal.x, normal.x,
                      tangent.y,  binormal.y, normal.y);
 ```
 
-Then, a linear seach is performed along the light ray for geometry obsructing
+Then, a linear seach is performed along the light ray for geometry obstructing
 the path between light source and current position:
 ```glsl
 // Compute the occlusion
