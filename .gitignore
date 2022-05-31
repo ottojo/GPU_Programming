@@ -3,3 +3,4 @@ index.html
 styling.css
 __pycache__
 .venv
+*.zip
