@@ -191,12 +191,12 @@ class Exc6(WindowInterface):
             self.worldViewProjMat = self.projMat * self.viewMat
         self.mouse = self.wnd.mouse
         self.lastRotated = self.wnd.mouse_pressed
-        
-        if self.wnd.keys[0x25] == True:
+
+        if self.wnd.keys[106] == True:
             self.lightDir_[0] += 0.01
-        if self.wnd.keys[0x27] == True:
+        if self.wnd.keys[117] == True:
             self.lightDir_[0] -= 0.01
-        
+
         self.ctx.enable(moderngl.DEPTH_TEST)
         self.ctx.clear(1.0, 1.0, 1.0)
         self.mvp.write(self.worldViewProjMat.transpose().astype('f4').tobytes())
