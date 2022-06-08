@@ -15,7 +15,8 @@ in vec2 texCoords;
 
 out vec4 outColor;
 
-#define MAX_ITER 50
+#define MAX_ITER_LINEAR 50
+#define MAX_ITER_BINARY 10
 
 bool belowSurface(float currH, vec2 stin, vec2 stout) {
   vec2 newTexCoords = stin * currH + stout * (1.0 - currH);
@@ -44,27 +45,25 @@ void main() {
   float currH = 1.0;
   float intersection = 0.0;
 
-  /*
-  for(int i = 0; i < MAX_ITER; ++i)
-  {
-      currH -= 1.0/float(MAX_ITER);
-      newTexCoords = stin*currH + stout*(1.0-currH);
-      float height = texture(dispTexture, newTexCoords).r;
-      if(intersection == 0.0){
-          if(currH <= height){
-              intersection = currH;
-          }
-      }
-  }*/
-  
+  // Binary search interval
+  float hMin = 1.0;
+  float hMax = 0.0;
 
-  float hMin = 0;
-  float hMax = 1;
+  // Linear search from h=1 (stin) towards h=0 (stout)
+  for (int i = 0; i < MAX_ITER_LINEAR; ++i) {
+    currH -= 1.0 / float(MAX_ITER_LINEAR);
+    if (belowSurface(currH, stin, stout)) {
+      // First point below surface -> Binary search
+      hMin = currH;
+      break;
+    }
 
-  for (int i = 0; i < MAX_ITER; i++) {
+    hMax = currH;
+  }
+
+  for (int i = 0; i < MAX_ITER_BINARY; i++) {
     float middle = hMin + 0.5 * (hMax - hMin);
     if (belowSurface(middle, stin, stout)) {
-      
       hMin = middle;
     } else {
       hMax = middle;
