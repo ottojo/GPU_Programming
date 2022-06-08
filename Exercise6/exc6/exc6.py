@@ -159,10 +159,10 @@ class Exc6(WindowInterface):
         self.lastRotated_ = False
         self.mouse = (0.0, 0.0)
         
-        diffImg = Image.open(local('textures', 'bricks_diff.jpg')).convert('RGB').transpose(Image.FLIP_TOP_BOTTOM)
-        specImg = Image.open(local('textures', 'bricks_spec.jpg')).convert('RGB').transpose(Image.FLIP_TOP_BOTTOM)
-        normImg = Image.open(local('textures', 'bricks_normal.jpg')).convert('RGB').transpose(Image.FLIP_TOP_BOTTOM)
-        depthImg = Image.open(local('textures', 'bricks_depth.jpg')).convert('RGB').transpose(Image.FLIP_TOP_BOTTOM)
+        diffImg = Image.open(local('textures', 'bricks_diff.jpg')).convert('RGB').transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+        specImg = Image.open(local('textures', 'bricks_spec.jpg')).convert('RGB').transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+        normImg = Image.open(local('textures', 'bricks_normal.jpg')).convert('RGB').transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+        depthImg = Image.open(local('textures', 'bricks_depth.jpg')).convert('RGB').transpose(Image.Transpose.FLIP_TOP_BOTTOM)
         
         self.diffTexture = self.ctx.texture(diffImg.size, 3, diffImg.tobytes())
         self.specTexture = self.ctx.texture(specImg.size, 3, specImg.tobytes())
