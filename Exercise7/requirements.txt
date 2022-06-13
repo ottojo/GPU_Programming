@@ -1,3 +1,4 @@
 moderngl
 numpy
 pyqt5
+PyOpenGL

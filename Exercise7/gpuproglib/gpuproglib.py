@@ -41,7 +41,7 @@ class Window(QtOpenGL.QGLWidget):
         self.move(QtWidgets.QDesktopWidget().rect().center() - self.rect().center())
         self.setWindowTitle(title)
 
-        self.start_time = time.clock()
+        self.start_time = time.perf_counter()
         self.factory: type(WindowInterface) = lambda: None
         self.iface = None
 
@@ -79,7 +79,7 @@ class Window(QtOpenGL.QGLWidget):
     def paintGL(self):
         if self.iface is None:
             self.iface = self.factory()
-        self.wnd.time = time.clock() - self.start_time
+        self.wnd.time = time.perf_counter() - self.start_time
         self.iface.render()
         self.wnd.old_keys = np.copy(self.wnd.keys)
         self.wnd.wheel = 0
