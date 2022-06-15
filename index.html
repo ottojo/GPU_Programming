@@ -122,6 +122,12 @@ Binary search</a></li>
 id="toc-displacement-mapping---relief-mapping">Displacement mapping -
 Relief mapping</a></li>
 </ul></li>
+<li><a href="#exercise-7" id="toc-exercise-7">Exercise 7</a>
+<ul>
+<li><a href="#horizon-based-screen-space-ambient-occlusion"
+id="toc-horizon-based-screen-space-ambient-occlusion">Horizon-based
+Screen Space Ambient Occlusion</a></li>
+</ul></li>
 </ul>
 </nav>
 <h1 id="introduction">Introduction</h1>
@@ -389,5 +395,37 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb14-1"><a href=
 <span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>intersection <span class="op">=</span> hMin <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span>hMax <span class="op">-</span> hMin<span class="op">);</span></span></code></pre></div>
+<h1 id="exercise-7">Exercise 7</h1>
+<h2 id="horizon-based-screen-space-ambient-occlusion">Horizon-based
+Screen Space Ambient Occlusion</h2>
+<p>The horizon angle is computed in multiple directions, as defined by
+<code>currentScreenVect</code>:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> NUM_ROTATIONS<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 2D ray in screen space</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">vec2</span> currentScreenVect <span class="op">=</span> <span class="fu">rotationMatrix</span><span class="op">(</span>i <span class="op">*</span> augment<span class="op">)</span> <span class="op">*</span> initScreenVect<span class="op">;</span></span></code></pre></div>
+<p>Along this ray (in screen space), the world space position is sampled
+using the provided input texture:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> j <span class="op">&lt;=</span> NUM_SAMPLES_DIRECTION<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Get the current position along the ray.</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">vec4</span> auxPosition <span class="op">=</span> <span class="bu">texture</span><span class="op">(</span>posTex<span class="op">,</span> uv <span class="op">+</span> j <span class="op">*</span> DISPLACEMENT <span class="op">*</span> currentScreenVect<span class="op">);</span></span></code></pre></div>
+<p>The angle between the normal and the point along the ray is
+computed:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Compute the angle between the normal and the displacement vector</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">//  to the position we are checking.</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> angle <span class="op">=</span> <span class="bu">acos</span><span class="op">(</span><span class="bu">dot</span><span class="op">(</span>normalPos<span class="op">,</span> <span class="bu">normalize</span><span class="op">(</span>auxPosition <span class="op">-</span> currPos<span class="op">)));</span></span></code></pre></div>
+<p>The minimum angle along each direction determines the occlusion in
+that direction, the occlusion values for each direction are
+averaged.</p>
+<p>If the distance to the point along the ray exceeds a set maximum, it
+is clamped, which sets its contribution to the current ray occlusion to
+zero.</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Compute the distance between the center point (currPos)</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">//  and the position we are checking.</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> <span class="bu">distance</span> <span class="op">=</span> <span class="bu">length</span><span class="op">(</span>auxPosition <span class="op">-</span> currPos<span class="op">);</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="bu">distance</span> <span class="op">=</span> <span class="bu">min</span><span class="op">(</span>MAX_EFFECT_DISTANCE<span class="op">,</span> <span class="bu">distance</span><span class="op">);</span></span></code></pre></div>
 </body>
 </html>
