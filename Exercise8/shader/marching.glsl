@@ -3,6 +3,8 @@ const float t_min = 0.0;
 const float t_max = 200.0;
 const float EPSILON = 0.0001;
 
+#define M_PI 3.1415926535897932384626433832795
+
 float f(vec3);
 
 /**
@@ -130,22 +132,19 @@ float cylinderSDF(vec3 p, float h, float r) {
  */
 float f(vec3 samplePoint) {
   // Slowly spin the whole scene
-  samplePoint = rotateY(iTime / 2.0) * samplePoint;
-  // TODO - Create your scene.
+  vec3 samplePoint1 = rotateY(iTime / 2.0) * samplePoint;
+  // Second cylinder is rotated another 90deg
+  vec3 samplePoint2 = rotateY(M_PI / 2) * samplePoint1;
 
-  /*
-  // Circle with radius 0.5
-  return length(samplePoint) - 0.5;
-  */
+  // Deform and animate the cylinder
+  samplePoint1.y += sin(iTime - samplePoint.z * 1.5);
+  // Second cylinder is rotated -> animate along x
+  samplePoint2.y += sin(iTime - samplePoint.x * 1.5);
 
-  /*
-  // Box:
-  vec3 sizes = vec3(0.5, 0.5, 0.5);
-  vec3 d = abs(samplePoint) - sizes;
-  return length(max(d, 0))+min(max(d.x, max(d.y,d.z)), 0);
-  */
+  float cylinder1 = cylinderSDF(samplePoint1, 4, 0.5);
+  float cylinder2 = cylinderSDF(samplePoint2, 4, 0.5);
 
-  // return 10.0;
+  return unionSDF(cylinder1, cylinder2);
 }
 
 /**
