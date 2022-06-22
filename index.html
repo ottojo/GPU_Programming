@@ -128,6 +128,19 @@ Relief mapping</a></li>
 id="toc-horizon-based-screen-space-ambient-occlusion">Horizon-based
 Screen Space Ambient Occlusion</a></li>
 </ul></li>
+<li><a href="#exercise-8-signed-distance-functions"
+id="toc-exercise-8-signed-distance-functions">Exercise 8: Signed
+Distance Functions</a>
+<ul>
+<li><a href="#create-a-cylinder" id="toc-create-a-cylinder">Create a
+cylinder</a></li>
+<li><a href="#deform-the-cylinder" id="toc-deform-the-cylinder">Deform
+the cylinder</a></li>
+<li><a href="#add-another-cylinder" id="toc-add-another-cylinder">Add
+another cylinder</a></li>
+<li><a href="#visual-artifacts" id="toc-visual-artifacts">Visual
+artifacts</a></li>
+</ul></li>
 </ul>
 </nav>
 <h1 id="introduction">Introduction</h1>
@@ -427,5 +440,69 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb18-1"><a href=
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">//  and the position we are checking.</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> <span class="bu">distance</span> <span class="op">=</span> <span class="bu">length</span><span class="op">(</span>auxPosition <span class="op">-</span> currPos<span class="op">);</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="bu">distance</span> <span class="op">=</span> <span class="bu">min</span><span class="op">(</span>MAX_EFFECT_DISTANCE<span class="op">,</span> <span class="bu">distance</span><span class="op">);</span></span></code></pre></div>
+<h1 id="exercise-8-signed-distance-functions">Exercise 8: Signed
+Distance Functions</h1>
+<h2 id="create-a-cylinder">Create a cylinder</h2>
+<p>Since the cylinder SDF is already provided, it is sufficient to call
+it in <code>f()</code>:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> <span class="fu">f</span><span class="op">(</span><span class="dt">vec3</span> samplePoint<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Slowly spin the whole scene</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  samplePoint <span class="op">=</span> <span class="fu">rotateY</span><span class="op">(</span>iTime <span class="op">/</span> <span class="fl">2.0</span><span class="op">)</span> <span class="op">*</span> samplePoint<span class="op">;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="fu">cylinderSDF</span><span class="op">(</span>samplePoint<span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="deform-the-cylinder">Deform the cylinder</h2>
+<p>To achieve a deformation similar to the one displayed in the example
+image, the y-coordinate of the sample point is shifted. The amount of
+displacement is animated using the current time and z-position (which is
+the position along the axis of the cylinder):</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> <span class="fu">f</span><span class="op">(</span><span class="dt">vec3</span> samplePoint<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Slowly spin the whole scene</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  samplePoint <span class="op">=</span> <span class="fu">rotateY</span><span class="op">(</span>iTime <span class="op">/</span> <span class="fl">2.0</span><span class="op">)</span> <span class="op">*</span> samplePoint<span class="op">;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Deform and animate the cylinder</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  samplePoint<span class="op">.</span><span class="fu">y</span> <span class="op">+=</span> <span class="bu">sin</span><span class="op">(</span>iTime <span class="op">-</span> samplePoint<span class="op">.</span><span class="fu">z</span> <span class="op">*</span> <span class="fl">1.5</span><span class="op">);</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="fu">cylinderSDF</span><span class="op">(</span>samplePoint<span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="add-another-cylinder">Add another cylinder</h2>
+<p>The cylinder SDF is evaluated twice, and combined using
+<code>unionSDF</code>. The sample point for the second cylinder is
+rotated by 90°, and the animation is adjusted to animate along the
+length of the cylinder, which is now the x instead of z axis.</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define M_PI 3.1415926535897932384626433832795</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> <span class="fu">f</span><span class="op">(</span><span class="dt">vec3</span> samplePoint<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Slowly spin the whole scene</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">vec3</span> samplePoint1 <span class="op">=</span> <span class="fu">rotateY</span><span class="op">(</span>iTime <span class="op">/</span> <span class="fl">2.0</span><span class="op">)</span> <span class="op">*</span> samplePoint<span class="op">;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Second cylinder is rotated another 90deg</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">vec3</span> samplePoint2 <span class="op">=</span> <span class="fu">rotateY</span><span class="op">(</span>M_PI <span class="op">/</span> <span class="dv">2</span><span class="op">)</span> <span class="op">*</span> samplePoint1<span class="op">;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Deform and animate the cylinder</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  samplePoint1<span class="op">.</span><span class="fu">y</span> <span class="op">+=</span> <span class="bu">sin</span><span class="op">(</span>iTime <span class="op">-</span> samplePoint<span class="op">.</span><span class="fu">z</span> <span class="op">*</span> <span class="fl">1.5</span><span class="op">);</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Second cylinder is rotated -&gt; animate along x</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  samplePoint2<span class="op">.</span><span class="fu">y</span> <span class="op">+=</span> <span class="bu">sin</span><span class="op">(</span>iTime <span class="op">-</span> samplePoint<span class="op">.</span><span class="fu">x</span> <span class="op">*</span> <span class="fl">1.5</span><span class="op">);</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">float</span> cylinder1 <span class="op">=</span> <span class="fu">cylinderSDF</span><span class="op">(</span>samplePoint1<span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">float</span> cylinder2 <span class="op">=</span> <span class="fu">cylinderSDF</span><span class="op">(</span>samplePoint2<span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="fu">unionSDF</span><span class="op">(</span>cylinder1<span class="op">,</span> cylinder2<span class="op">);</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="visual-artifacts">Visual artifacts</h2>
+<p>When using the output of our SDF <code>f(samplePoint)</code> directly
+as the step size, artifacts appear. This is because of the
+transformations we apply to the sample point in <code>f</code>, which
+results in <code>f(p)</code> not being the correct distance between the
+object and <code>p</code>, but the distance between the object and the
+transformed and (non uniformly) scaled <code>samplePoint</code>. This is
+not a problem for rendering, since the sign is still correct. It is
+important however to not overestimate the step size, since this could
+lead to missing geometry during raycasting. The scaling of
+<code>f(p)</code> ensures the distance is never overestimated, and the
+step size is never too large.</p>
 </body>
 </html>
