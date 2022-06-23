@@ -137,9 +137,9 @@ float f(vec3 samplePoint) {
   vec3 samplePoint2 = rotateY(M_PI / 2) * samplePoint1;
 
   // Deform and animate the cylinder
-  samplePoint1.y += sin(iTime - samplePoint.z * 1.5);
+  samplePoint1.y += sin(iTime - samplePoint1.z * 1.5);
   // Second cylinder is rotated -> animate along x
-  samplePoint2.y += sin(iTime - samplePoint.x * 1.5);
+  samplePoint2.y += sin(iTime - samplePoint2.z * 1.5);
 
   float cylinder1 = cylinderSDF(samplePoint1, 4, 0.5);
   float cylinder2 = cylinderSDF(samplePoint2, 4, 0.5);
