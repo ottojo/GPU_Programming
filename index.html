@@ -471,8 +471,7 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb20-1"><a href=
 <h2 id="add-another-cylinder">Add another cylinder</h2>
 <p>The cylinder SDF is evaluated twice, and combined using
 <code>unionSDF</code>. The sample point for the second cylinder is
-rotated by 90°, and the animation is adjusted to animate along the
-length of the cylinder, which is now the x instead of z axis.</p>
+rotated by 90°.</p>
 <div class="sourceCode" id="cb21"><pre
 class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define M_PI 3.1415926535897932384626433832795</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -483,9 +482,9 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb21-1"><a href=
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">vec3</span> samplePoint2 <span class="op">=</span> <span class="fu">rotateY</span><span class="op">(</span>M_PI <span class="op">/</span> <span class="dv">2</span><span class="op">)</span> <span class="op">*</span> samplePoint1<span class="op">;</span></span>
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Deform and animate the cylinder</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  samplePoint1<span class="op">.</span><span class="fu">y</span> <span class="op">+=</span> <span class="bu">sin</span><span class="op">(</span>iTime <span class="op">-</span> samplePoint<span class="op">.</span><span class="fu">z</span> <span class="op">*</span> <span class="fl">1.5</span><span class="op">);</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  samplePoint1<span class="op">.</span><span class="fu">y</span> <span class="op">+=</span> <span class="bu">sin</span><span class="op">(</span>iTime <span class="op">-</span> samplePoint1<span class="op">.</span><span class="fu">z</span> <span class="op">*</span> <span class="fl">1.5</span><span class="op">);</span></span>
 <span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Second cylinder is rotated -&gt; animate along x</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  samplePoint2<span class="op">.</span><span class="fu">y</span> <span class="op">+=</span> <span class="bu">sin</span><span class="op">(</span>iTime <span class="op">-</span> samplePoint<span class="op">.</span><span class="fu">x</span> <span class="op">*</span> <span class="fl">1.5</span><span class="op">);</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  samplePoint2<span class="op">.</span><span class="fu">y</span> <span class="op">+=</span> <span class="bu">sin</span><span class="op">(</span>iTime <span class="op">-</span> samplePoint2<span class="op">.</span><span class="fu">z</span> <span class="op">*</span> <span class="fl">1.5</span><span class="op">);</span></span>
 <span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">float</span> cylinder1 <span class="op">=</span> <span class="fu">cylinderSDF</span><span class="op">(</span>samplePoint1<span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
 <span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">float</span> cylinder2 <span class="op">=</span> <span class="fu">cylinderSDF</span><span class="op">(</span>samplePoint2<span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
