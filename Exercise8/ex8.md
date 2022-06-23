@@ -34,9 +34,7 @@ float f(vec3 samplePoint) {
 ## Add another cylinder
 
 The cylinder SDF is evaluated twice, and combined using `unionSDF`.
-The sample point for the second cylinder is rotated by 90°, and the animation is
-adjusted to animate along the length of the cylinder, which is now the x instead
-of z axis.
+The sample point for the second cylinder is rotated by 90°.
 
 ```glsl
 #define M_PI 3.1415926535897932384626433832795
@@ -48,9 +46,9 @@ float f(vec3 samplePoint) {
   vec3 samplePoint2 = rotateY(M_PI / 2) * samplePoint1;
 
   // Deform and animate the cylinder
-  samplePoint1.y += sin(iTime - samplePoint.z * 1.5);
+  samplePoint1.y += sin(iTime - samplePoint1.z * 1.5);
   // Second cylinder is rotated -> animate along x
-  samplePoint2.y += sin(iTime - samplePoint.x * 1.5);
+  samplePoint2.y += sin(iTime - samplePoint2.z * 1.5);
 
   float cylinder1 = cylinderSDF(samplePoint1, 4, 0.5);
   float cylinder2 = cylinderSDF(samplePoint2, 4, 0.5);
