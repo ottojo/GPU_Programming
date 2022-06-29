@@ -27,5 +27,8 @@ pdf-7:
 pdf-8:
 	pandoc Exercise8/pdf_header.md Exercise8/ex8.md -o exercise8.pdf $(PANDOC_PDF_OPTIONS)
 
+pdf-9:
+	pandoc Exercise9/pdf_header.md Exercise9/ex9.md -o exercise9.pdf $(PANDOC_PDF_OPTIONS)
+
 clean:
 	rm -f exercise1.pdf exercise4.pdf exercise5.pdf index.html
