@@ -8,8 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-amd64.deb && sudo dpkg -i pandoc-2.18-1-amd64.deb
-      - run: make html
-      - run: mkdir output && cp index.html styling.css output
+      - run: make html summary-html
+      - run: mkdir output && cp exercises.html summary.html styling.css output
       - uses: peaceiris/actions-gh-pages@v3
         name: Deploy
         with:

@@ -7,7 +7,7 @@ styling.css:
 	curl -L -O https://b.enjam.info/panam/styling.css
 
 html: styling.css
-	pandoc $(shell cat pandoc_list.txt) -o index.html $(PANDOC_HTML_OPTIONS)
+	pandoc $(shell cat pandoc_list.txt) -o exercises.html $(PANDOC_HTML_OPTIONS)
 
 pdf-1:
 	pandoc Exercise1/pdf_header.md Exercise1/exercise1.md -o exercise1.pdf $(PANDOC_PDF_OPTIONS)
@@ -17,6 +17,9 @@ pdf-4:
 
 pdf-5:
 	pandoc Exercise5/pdf_header.md Exercise5/ex5.md -o exercise5.pdf $(PANDOC_PDF_OPTIONS)
+
+summary-html: styling.css
+	pandoc Summary/main.md -o summary.html $(PANDOC_HTML_OPTIONS)
 
 clean:
 	rm -f exercise1.pdf exercise4.pdf exercise5.pdf index.html
