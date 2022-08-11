@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>main</title>
+  <meta name="author" content="Jonas Otto" />
+  <title>GPU Programming</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -19,39 +20,125 @@
   <![endif]-->
 </head>
 <body>
+<header id="title-block-header">
+<h1 class="title">GPU Programming</h1>
+<p class="author">Jonas Otto</p>
+<p class="date">August 2022</p>
+</header>
 <nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#gpu-programming" id="toc-gpu-programming">GPU
-Programming</a>
 <ul>
 <li><a href="#overview-graphics-pipeline"
 id="toc-overview-graphics-pipeline">Overview: Graphics Pipeline</a></li>
 <li><a href="#vertex-shader" id="toc-vertex-shader">Vertex
 Shader</a></li>
-<li><a href="#pixel-shader" id="toc-pixel-shader">Pixel Shader</a></li>
+<li><a href="#pixel-shader" id="toc-pixel-shader">Pixel Shader</a>
+<ul>
+<li><a href="#rasterization"
+id="toc-rasterization">Rasterization</a></li>
+<li><a href="#z-buffer" id="toc-z-buffer">Z-Buffer</a></li>
+<li><a href="#lighting" id="toc-lighting">Lighting</a>
+<ul>
+<li><a href="#lambertian-reflectance-model"
+id="toc-lambertian-reflectance-model">Lambertian Reflectance
+Model</a></li>
+<li><a href="#phong-reflectance-model"
+id="toc-phong-reflectance-model">Phong Reflectance Model</a></li>
+<li><a href="#blinn-phong-reflectance-model"
+id="toc-blinn-phong-reflectance-model">Blinn-Phong Reflectance
+Model</a></li>
+</ul></li>
+<li><a href="#texturing" id="toc-texturing">Texturing</a></li>
+<li><a href="#frame-buffers" id="toc-frame-buffers">Frame
+Buffers</a></li>
+<li><a href="#sdfs" id="toc-sdfs">SDFs</a></li>
+</ul></li>
 <li><a href="#geometry-shader" id="toc-geometry-shader">Geometry
-Shader</a></li>
+Shader</a>
+<ul>
+<li><a href="#example-normal-visualization"
+id="toc-example-normal-visualization">Example: Normal
+visualization</a></li>
+<li><a href="#example-shadow-volumes"
+id="toc-example-shadow-volumes">Example: Shadow volumes</a></li>
+</ul></li>
 <li><a href="#tessellation-shader"
 id="toc-tessellation-shader">Tessellation Shader</a></li>
-<li><a href="#advanced-glsl" id="toc-advanced-glsl">Advanced
-GLSL</a></li>
+<li><a href="#advanced-glsl" id="toc-advanced-glsl">Advanced GLSL</a>
+<ul>
+<li><a href="#transform-feedback" id="toc-transform-feedback">Transform
+Feedback</a></li>
+<li><a href="#uniform-buffer-objects"
+id="toc-uniform-buffer-objects">Uniform Buffer Objects</a></li>
+<li><a href="#shader-storage-buffer-objects"
+id="toc-shader-storage-buffer-objects">Shader Storage Buffer
+Objects</a></li>
+</ul></li>
 <li><a href="#gpu-architecture" id="toc-gpu-architecture">GPU
-Architecture</a></li>
+Architecture</a>
+<ul>
+<li><a href="#processor-architecture"
+id="toc-processor-architecture">Processor Architecture</a></li>
+<li><a href="#thread-divergence" id="toc-thread-divergence">Thread
+Divergence</a></li>
+<li><a href="#memory" id="toc-memory">Memory</a></li>
+</ul></li>
 <li><a href="#compute-shader" id="toc-compute-shader">Compute
 Shader</a></li>
-<li><a href="#cuda" id="toc-cuda">Cuda</a></li>
+<li><a href="#cuda" id="toc-cuda">Cuda</a>
+<ul>
+<li><a href="#synchronization"
+id="toc-synchronization">Synchronization</a></li>
+<li><a href="#concurrency-streams"
+id="toc-concurrency-streams">Concurrency: Streams</a></li>
 </ul></li>
 </ul>
 </nav>
-<h1 id="gpu-programming">GPU Programming</h1>
-<h2 id="overview-graphics-pipeline">Overview: Graphics Pipeline</h2>
-<h2 id="vertex-shader">Vertex Shader</h2>
-<h2 id="pixel-shader">Pixel Shader</h2>
-<h2 id="geometry-shader">Geometry Shader</h2>
-<h2 id="tessellation-shader">Tessellation Shader</h2>
-<h2 id="advanced-glsl">Advanced GLSL</h2>
-<h2 id="gpu-architecture">GPU Architecture</h2>
-<h2 id="compute-shader">Compute Shader</h2>
-<h2 id="cuda">Cuda</h2>
+<h1 id="overview-graphics-pipeline">Overview: Graphics Pipeline</h1>
+<p>The graphics pipeline running on the GPU consists of multiple
+consecutive stages, some of which are programmable. The focus in this
+lecture is on those programmable Stages, and how to program these using
+GLSL shaders.</p>
+<p>The basic pipeline consists of * Vertex Shader * Tesselation *
+Control * Evaluation * Geometry Shader * Fragment Shader</p>
+<p>Additionally, compute shaders can perform arbitrary computation and
+can be used in various stages of the pipeline, or without using the
+graphics pipeline at all.</p>
+<h1 id="vertex-shader">Vertex Shader</h1>
+<p>The vertex shader is executed once for every vertex in the scene. It
+can transform the position and attributes of these vertices, and can
+perform per-vertex calculations such as lighting (which can also be done
+per-pixel, as explained later). A possible use case for moving vertices
+is also animating objects in the scene.</p>
+<h1 id="pixel-shader">Pixel Shader</h1>
+<p>The pixel shader (fragment shader) runs after rasterization, for
+every pixel. Its output is the desired color of the pixel, the inputs
+are the outputs of the previous stages.</p>
+<h2 id="rasterization">Rasterization</h2>
+<h2 id="z-buffer">Z-Buffer</h2>
+<h2 id="lighting">Lighting</h2>
+<h3 id="lambertian-reflectance-model">Lambertian Reflectance Model</h3>
+<h3 id="phong-reflectance-model">Phong Reflectance Model</h3>
+<h3 id="blinn-phong-reflectance-model">Blinn-Phong Reflectance
+Model</h3>
+<h2 id="texturing">Texturing</h2>
+<h2 id="frame-buffers">Frame Buffers</h2>
+<h2 id="sdfs">SDFs</h2>
+<h1 id="geometry-shader">Geometry Shader</h1>
+<h2 id="example-normal-visualization">Example: Normal visualization</h2>
+<h2 id="example-shadow-volumes">Example: Shadow volumes</h2>
+<h1 id="tessellation-shader">Tessellation Shader</h1>
+<h1 id="advanced-glsl">Advanced GLSL</h1>
+<h2 id="transform-feedback">Transform Feedback</h2>
+<h2 id="uniform-buffer-objects">Uniform Buffer Objects</h2>
+<h2 id="shader-storage-buffer-objects">Shader Storage Buffer
+Objects</h2>
+<h1 id="gpu-architecture">GPU Architecture</h1>
+<h2 id="processor-architecture">Processor Architecture</h2>
+<h2 id="thread-divergence">Thread Divergence</h2>
+<h2 id="memory">Memory</h2>
+<h1 id="compute-shader">Compute Shader</h1>
+<h1 id="cuda">Cuda</h1>
+<h2 id="synchronization">Synchronization</h2>
+<h2 id="concurrency-streams">Concurrency: Streams</h2>
 </body>
 </html>
