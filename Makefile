@@ -34,4 +34,4 @@ summary-html: styling.css
 	pandoc Summary/main.md -o summary.html $(PANDOC_HTML_OPTIONS)
 
 clean:
-	rm -f exercise1.pdf exercise4.pdf exercise5.pdf index.html
+	rm -f exercise1.pdf exercise4.pdf exercise5.pdf exercise6.pdf exercise7.pdf exercise8.pdf exercise9.pdf index.html exercises.html summary.html
