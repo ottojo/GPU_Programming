@@ -1,0 +1,7 @@
+{
+	"TODO": {
+		"prefix": "todo",
+		"scope": "markdown",
+		"body": "> **_TODO:_** $1"
+	}
+}
