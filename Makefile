@@ -31,7 +31,7 @@ pdf-9:
 	pandoc Exercise9/pdf_header.md Exercise9/ex9.md -o exercise9.pdf $(PANDOC_PDF_OPTIONS)
 
 summary-html: styling.css
-	pandoc Summary/main.md -o summary.html $(PANDOC_HTML_OPTIONS)
+	pandoc $(shell cat summary_pandoc_list.txt) -o summary.html $(PANDOC_HTML_OPTIONS)
 
 clean:
 	rm -f exercise1.pdf exercise4.pdf exercise5.pdf exercise6.pdf exercise7.pdf exercise8.pdf exercise9.pdf index.html exercises.html summary.html
