@@ -98,7 +98,7 @@ In the geometry shader, before `EmitVertex()` we can update `gl_Layer` to select
 which layer of the current texture we want to render to.
 It is also not required to loop over layers in the shader, instead *instancing*
 can be used to execute the shader more than once for every primitive.
-The number of incocations is specified in the shader:
+The number of invocations is specified in the shader:
 
 ```glsl
 layout (invocations = 16, points) in;

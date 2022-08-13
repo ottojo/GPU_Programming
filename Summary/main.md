@@ -12,7 +12,7 @@ The focus in this lecture is on those programmable Stages, and how to program th
 The basic pipeline consists of
 
 * Vertex Shader
-* Tesselation
+* Tessellation
   * Control
   * Evaluation
 * Geometry Shader
