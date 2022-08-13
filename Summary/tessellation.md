@@ -34,7 +34,7 @@ This shader is executed once for each output control point, but all executions
 for the same patch are connected: They share the same output and can use
 synchronization.
 
-### Tessellation levels: Triangles
+### Tessellation levels
 For triangles, there is an *inner tessellation level* and three *outer tessellation levels*.
 The inner tessellation level is applied first and controls how many inner
 triangles are created (by dividing all outer lines into $n$ segments, with inner
@@ -46,6 +46,11 @@ which may have different inner tessellation levels.
 
 Usually, tessellation levels are dynamically calculated based on how far the
 object is from the camera!
+
+Tessellation of quads can be similarly controlled, although now there are four
+outer tessellation levels and two inner tessellation levels (one for each axis).
+
+Isolines require just two outer tessellation levels.
 
 ### Inputs
 Some inputs are again provided in a `gl_in[]`, providing for example the vertex
@@ -73,3 +78,38 @@ same patch. This requires synchronization, which is provided by the `barrier()`
 function, ensuring that all executions have written their outputs.
 
 ## Tessellation Evaluation Shader 
+
+### Inputs + Outputs
+The TES is executed for each new vertex.
+It receives the barycentric coordinates of each vertex in the original triangle
+as input, and interpolates the new position for the vertex:
+`gl_in[i].gl_Position` contains the positions of the patch control points,
+`gl_TessCoord` contains the barycentric coordinates of the current vertex.
+
+The only required output is the position `gl_Position` of the vertex.
+
+### Barycentric Coordinates
+
+The order and spacing-mode of tesselation are specified:
+```glsl
+layout (triangles, equal_spacing, ccw) in;
+```
+
+Multiple spacing modes such as `equal_spacing`, `fractional_even_spacing` and
+`fractional_even_spacing` are available.
+The barycentric coordinates provides the vertex position as a weighted sum of
+the control point positions.
+
+For quads and isolines, the coordinates are given as $uv$ coordinates inside the
+original quad.
+
+## Advanced Application: Bezier Curves
+
+An isolines tessellation with the first tessellation level being 1, a bezier
+curve is rendered. The second tessellation level specifies the number of
+segments in the curve.
+
+The TES calculates the position of each vertex by evaluating the bezier curve
+along the second axis of the quad (the one with varying tessellation level).
+
+This can be extended to bezier surfaces using quad tessellation.
