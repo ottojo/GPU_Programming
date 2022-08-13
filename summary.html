@@ -147,7 +147,25 @@ volumes</a></li>
 rendering</a></li>
 </ul></li>
 <li><a href="#tessellation-shader"
-id="toc-tessellation-shader">Tessellation Shader</a></li>
+id="toc-tessellation-shader">Tessellation Shader</a>
+<ul>
+<li><a href="#subdivision-patterns"
+id="toc-subdivision-patterns">Subdivision Patterns</a></li>
+<li><a href="#tessellation-control-shader"
+id="toc-tessellation-control-shader">Tessellation Control Shader</a>
+<ul>
+<li><a href="#tessellation-levels-triangles"
+id="toc-tessellation-levels-triangles">Tessellation levels:
+Triangles</a></li>
+<li><a href="#inputs" id="toc-inputs">Inputs</a></li>
+<li><a href="#outputs" id="toc-outputs">Outputs</a></li>
+<li><a href="#synchronization"
+id="toc-synchronization">Synchronization</a></li>
+</ul></li>
+<li><a href="#tessellation-evaluation-shader"
+id="toc-tessellation-evaluation-shader">Tessellation Evaluation
+Shader</a></li>
+</ul></li>
 <li><a href="#advanced-glsl" id="toc-advanced-glsl">Advanced GLSL</a>
 <ul>
 <li><a href="#transform-feedback" id="toc-transform-feedback">Transform
@@ -171,8 +189,8 @@ Divergence</a></li>
 Shader</a></li>
 <li><a href="#cuda" id="toc-cuda">Cuda</a>
 <ul>
-<li><a href="#synchronization"
-id="toc-synchronization">Synchronization</a></li>
+<li><a href="#synchronization-1"
+id="toc-synchronization-1">Synchronization</a></li>
 <li><a href="#concurrency-streams"
 id="toc-concurrency-streams">Concurrency: Streams</a></li>
 </ul></li>
@@ -186,7 +204,7 @@ GLSL shaders.</p>
 <p>The basic pipeline consists of</p>
 <ul>
 <li>Vertex Shader</li>
-<li>Tesselation
+<li>Tessellation
 <ul>
 <li>Control</li>
 <li>Evaluation</li>
@@ -371,11 +389,80 @@ where the scene is rendered into the six faces of a cube.</p>
 update <code>gl_Layer</code> to select which layer of the current
 texture we want to render to. It is also not required to loop over
 layers in the shader, instead <em>instancing</em> can be used to execute
-the shader more than once for every primitive. The number of incocations
+the shader more than once for every primitive. The number of invocations
 is specified in the shader:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">layout</span> <span class="op">(</span><span class="dt">invocations</span> <span class="op">=</span> <span class="dv">16</span><span class="op">,</span> <span class="dt">points</span><span class="op">)</span> <span class="dt">in</span><span class="op">;</span></span></code></pre></div>
 <h1 id="tessellation-shader">Tessellation Shader</h1>
+<p>Tessellation produces a more detailed model from a model with less
+triangles. The tessellation shader allows us to subdivide triangles
+based on the distance to the camera or other parameters.</p>
+<p>In order to perform this tessellation, not one but two additional
+stages are introduced between the vertex- and geometry shader: The
+Tessellation Control Shader and the Tessellation Evaluation Shader.</p>
+<p>The Tessellation Control Shader is executed once for each vertex of
+the input primitives. Its goal is to determine the tessellation level,
+or how much the triangle should be subdivided.</p>
+<p>The Tessellation Evaluation Shader is executed once for each new
+vertex that was created after subdivision. Its goal is to move the new
+vertex to the correct position.</p>
+<p>Actually generating the new primitives and vertices is done by the
+GPU hardware, we can only configure that step using the control
+shader.</p>
+<h2 id="subdivision-patterns">Subdivision Patterns</h2>
+<p>Multiple subdivision patterns are available:</p>
+<ul>
+<li>Triangles: Smaller triangle inside triangle</li>
+<li>Quads: Smaller quads in quad</li>
+<li>Quads Isolines: Parallel lines (with midpoints) along one axis
+inside the quad</li>
+</ul>
+<h2 id="tessellation-control-shader">Tessellation Control Shader</h2>
+<p>The goal of the TCS is to generate control points (inputs into
+subdivision: three for triangles, four for quads) and to define the
+tessellation levels.</p>
+<p>This shader is executed once for each output control point, but all
+executions for the same patch are connected: They share the same output
+and can use synchronization.</p>
+<h3 id="tessellation-levels-triangles">Tessellation levels:
+Triangles</h3>
+<p>For triangles, there is an <em>inner tessellation level</em> and
+three <em>outer tessellation levels</em>. The inner tessellation level
+is applied first and controls how many inner triangles are created (by
+dividing all outer lines into <span class="math inline">\(n\)</span>
+segments, with inner tessellation level <span
+class="math inline">\(n\)</span>). Then, the outer tessellation levels
+specify how many segments each of the original outer lines should
+actually end up with.</p>
+<p>The outer tessellation level is needed to correctly process adjacent
+triangles, which may have different inner tessellation levels.</p>
+<p>Usually, tessellation levels are dynamically calculated based on how
+far the object is from the camera!</p>
+<h3 id="inputs">Inputs</h3>
+<p>Some inputs are again provided in a <code>gl_in[]</code>, providing
+for example the vertex positions. <code>gl_InvocationID</code> provides
+the ID of the vertex inside the current primitive (indexing
+<code>gl_in</code>), and <code>gl_PrimitiveID</code> identifies the
+primitive. <code>gl_PatchVerticesIn</code> contains the number of
+vertices in the current patch.</p>
+<p>Custom shader inputs can be used as usual, in array form like in the
+geometry shader.</p>
+<h3 id="outputs">Outputs</h3>
+<p><code>gl_out[i].gl_Position</code> contains the vertex position as
+usual, the tessellation level as described above has to be written to
+<code>gl_TessLevelOuter[4]</code> and
+<code>gl_TessLevelInner[2]</code>.</p>
+<p>Custom outputs for the TES are per control point by default, but can
+be specified to be per primitive using</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">patch</span> <span class="dt">out</span> <span class="dt">vec3</span> customVar<span class="op">;</span></span></code></pre></div>
+<h3 id="synchronization">Synchronization</h3>
+<p>TCS instantiations can read outputs from other instantiations
+belonging to the same patch. This requires synchronization, which is
+provided by the <code>barrier()</code> function, ensuring that all
+executions have written their outputs.</p>
+<h2 id="tessellation-evaluation-shader">Tessellation Evaluation
+Shader</h2>
 <h1 id="advanced-glsl">Advanced GLSL</h1>
 <h2 id="transform-feedback">Transform Feedback</h2>
 <h2 id="uniform-buffer-objects">Uniform Buffer Objects</h2>
@@ -387,7 +474,7 @@ Objects</h2>
 <h2 id="memory">Memory</h2>
 <h1 id="compute-shader">Compute Shader</h1>
 <h1 id="cuda">Cuda</h1>
-<h2 id="synchronization">Synchronization</h2>
+<h2 id="synchronization-1">Synchronization</h2>
 <h2 id="concurrency-streams">Concurrency: Streams</h2>
 </body>
 </html>
