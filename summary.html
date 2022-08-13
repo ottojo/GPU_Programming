@@ -154,9 +154,8 @@ id="toc-subdivision-patterns">Subdivision Patterns</a></li>
 <li><a href="#tessellation-control-shader"
 id="toc-tessellation-control-shader">Tessellation Control Shader</a>
 <ul>
-<li><a href="#tessellation-levels-triangles"
-id="toc-tessellation-levels-triangles">Tessellation levels:
-Triangles</a></li>
+<li><a href="#tessellation-levels"
+id="toc-tessellation-levels">Tessellation levels</a></li>
 <li><a href="#inputs" id="toc-inputs">Inputs</a></li>
 <li><a href="#outputs" id="toc-outputs">Outputs</a></li>
 <li><a href="#synchronization"
@@ -164,7 +163,16 @@ id="toc-synchronization">Synchronization</a></li>
 </ul></li>
 <li><a href="#tessellation-evaluation-shader"
 id="toc-tessellation-evaluation-shader">Tessellation Evaluation
-Shader</a></li>
+Shader</a>
+<ul>
+<li><a href="#inputs-outputs" id="toc-inputs-outputs">Inputs +
+Outputs</a></li>
+<li><a href="#barycentric-coordinates"
+id="toc-barycentric-coordinates">Barycentric Coordinates</a></li>
+</ul></li>
+<li><a href="#advanced-application-bezier-curves"
+id="toc-advanced-application-bezier-curves">Advanced Application: Bezier
+Curves</a></li>
 </ul></li>
 <li><a href="#advanced-glsl" id="toc-advanced-glsl">Advanced GLSL</a>
 <ul>
@@ -424,8 +432,7 @@ tessellation levels.</p>
 <p>This shader is executed once for each output control point, but all
 executions for the same patch are connected: They share the same output
 and can use synchronization.</p>
-<h3 id="tessellation-levels-triangles">Tessellation levels:
-Triangles</h3>
+<h3 id="tessellation-levels">Tessellation levels</h3>
 <p>For triangles, there is an <em>inner tessellation level</em> and
 three <em>outer tessellation levels</em>. The inner tessellation level
 is applied first and controls how many inner triangles are created (by
@@ -438,6 +445,10 @@ actually end up with.</p>
 triangles, which may have different inner tessellation levels.</p>
 <p>Usually, tessellation levels are dynamically calculated based on how
 far the object is from the camera!</p>
+<p>Tessellation of quads can be similarly controlled, although now there
+are four outer tessellation levels and two inner tessellation levels
+(one for each axis).</p>
+<p>Isolines require just two outer tessellation levels.</p>
 <h3 id="inputs">Inputs</h3>
 <p>Some inputs are again provided in a <code>gl_in[]</code>, providing
 for example the vertex positions. <code>gl_InvocationID</code> provides
@@ -463,6 +474,36 @@ provided by the <code>barrier()</code> function, ensuring that all
 executions have written their outputs.</p>
 <h2 id="tessellation-evaluation-shader">Tessellation Evaluation
 Shader</h2>
+<h3 id="inputs-outputs">Inputs + Outputs</h3>
+<p>The TES is executed for each new vertex. It receives the barycentric
+coordinates of each vertex in the original triangle as input, and
+interpolates the new position for the vertex:
+<code>gl_in[i].gl_Position</code> contains the positions of the patch
+control points, <code>gl_TessCoord</code> contains the barycentric
+coordinates of the current vertex.</p>
+<p>The only required output is the position <code>gl_Position</code> of
+the vertex.</p>
+<h3 id="barycentric-coordinates">Barycentric Coordinates</h3>
+<p>The order and spacing-mode of tesselation are specified:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">layout</span> <span class="op">(</span><span class="dt">triangles</span><span class="op">,</span> <span class="dt">equal_spacing</span><span class="op">,</span> <span class="dt">ccw</span><span class="op">)</span> <span class="dt">in</span><span class="op">;</span></span></code></pre></div>
+<p>Multiple spacing modes such as <code>equal_spacing</code>,
+<code>fractional_even_spacing</code> and
+<code>fractional_even_spacing</code> are available. The barycentric
+coordinates provides the vertex position as a weighted sum of the
+control point positions.</p>
+<p>For quads and isolines, the coordinates are given as <span
+class="math inline">\(uv\)</span> coordinates inside the original
+quad.</p>
+<h2 id="advanced-application-bezier-curves">Advanced Application: Bezier
+Curves</h2>
+<p>An isolines tessellation with the first tessellation level being 1, a
+bezier curve is rendered. The second tessellation level specifies the
+number of segments in the curve.</p>
+<p>The TES calculates the position of each vertex by evaluating the
+bezier curve along the second axis of the quad (the one with varying
+tessellation level).</p>
+<p>This can be extended to bezier surfaces using quad tessellation.</p>
 <h1 id="advanced-glsl">Advanced GLSL</h1>
 <h2 id="transform-feedback">Transform Feedback</h2>
 <h2 id="uniform-buffer-objects">Uniform Buffer Objects</h2>
