@@ -115,7 +115,6 @@ id="toc-perspective-projection">Perspective Projection</a></li>
 <ul>
 <li><a href="#rasterization"
 id="toc-rasterization">Rasterization</a></li>
-<li><a href="#g-buffer" id="toc-g-buffer">G-Buffer</a></li>
 <li><a href="#z-buffer" id="toc-z-buffer">Z-Buffer</a></li>
 <li><a href="#lighting" id="toc-lighting">Lighting</a>
 <ul>
@@ -153,6 +152,7 @@ Methods for Rendering Texture Geometry</a></li>
 </ul></li>
 <li><a href="#frame-buffers" id="toc-frame-buffers">Frame Buffers</a>
 <ul>
+<li><a href="#g-buffer" id="toc-g-buffer">G-Buffer</a></li>
 <li><a href="#ambient-occlusion" id="toc-ambient-occlusion">Ambient
 Occlusion</a></li>
 </ul></li>
@@ -358,8 +358,18 @@ assignment for associating vertices with bones.</p>
 every pixel. Its output is the desired color of the pixel, the inputs
 are the outputs of the previous stages.</p>
 <h2 id="rasterization">Rasterization</h2>
-<h2 id="g-buffer">G-Buffer</h2>
+<p>Rasterization happens in screen space (2x2 cube). The first step in
+rasterization is determining inside which triangles the pixel is
+located. The pixel location inside the triangle is then computed in
+barycentric coordinates. The depth is also computed, it may be
+beneficial however to map the depth non- linearly in order to achieve
+more precision for objects close to the camera. The depth may be
+overridden later in the pixel shader.</p>
 <h2 id="z-buffer">Z-Buffer</h2>
+<p>The Z-buffer stores the depth value of each pixel. It is used to
+determine which objects are visible or hidden by other geometry. The GPU
+may perform an early depth test, saving pixel shader invocations for
+pixels which are already known not to be visible.</p>
 <h2 id="lighting">Lighting</h2>
 <h3 id="types-of-light">Types of Light</h3>
 <ul>
@@ -519,6 +529,7 @@ loads for consecutive accesses.</p>
 intersection is found, and then refines the intersection in the last
 (small) interval using binary search with few steps.</p>
 <h2 id="frame-buffers">Frame Buffers</h2>
+<h3 id="g-buffer">G-Buffer</h3>
 <h3 id="ambient-occlusion">Ambient Occlusion</h3>
 <h2 id="sdfs">SDFs</h2>
 <h1 id="geometry-shader">Geometry Shader</h1>
@@ -573,7 +584,7 @@ four times in the shader.</p>
 visualization, with the difference being that the vertices for the
 displaced billboard corners are not generated on the CPU, but created in
 the geometry shader.</p>
-<p>An example for the adjancency feature of the input is given by the
+<p>An example for the adjacency feature of the input is given by the
 application of creating borders around a model: The input data now
 consists of six vertices per triangle, containing not only the current
 triangle but also the remaining vertices of the three triangles that
