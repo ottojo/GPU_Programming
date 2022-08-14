@@ -89,7 +89,6 @@ as input, and interpolates the new position for the vertex:
 The only required output is the position `gl_Position` of the vertex.
 
 ### Barycentric Coordinates
-
 The order and spacing-mode of tesselation are specified:
 ```glsl
 layout (triangles, equal_spacing, ccw) in;
@@ -104,7 +103,6 @@ For quads and isolines, the coordinates are given as $uv$ coordinates inside the
 original quad.
 
 ## Advanced Application: Bezier Curves
-
 An isolines tessellation with the first tessellation level being 1, a bezier
 curve is rendered. The second tessellation level specifies the number of
 segments in the curve.

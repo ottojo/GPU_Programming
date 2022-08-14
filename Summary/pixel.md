@@ -3,11 +3,22 @@ The pixel shader (fragment shader) runs after rasterization, for every pixel.
 Its output is the desired color of the pixel, the inputs are the outputs of the previous stages.
 
 ## Rasterization
-## G-Buffer
+Rasterization happens in screen space (2x2 cube).
+The first step in rasterization is determining inside which triangles the pixel
+is located.
+The pixel location inside the triangle is then computed in barycentric
+coordinates.
+The depth is also computed, it may be beneficial however to map the depth non-
+linearly in order to achieve more precision for objects close to the camera.
+The depth may be overridden later in the pixel shader.
+
 ## Z-Buffer
+The Z-buffer stores the depth value of each pixel.
+It is used to determine which objects are visible or hidden by other geometry.
+The GPU may perform an early depth test, saving pixel shader invocations for
+pixels which are already known not to be visible.
 
 ## Lighting
-
 ### Types of Light
 
 * Directional light: Parallel light rays, used for example for the sun
@@ -177,5 +188,6 @@ intersection is found, and then refines the intersection in the last (small)
 interval using binary search with few steps.
 
 ## Frame Buffers
+### G-Buffer
 ### Ambient Occlusion
 ## SDFs

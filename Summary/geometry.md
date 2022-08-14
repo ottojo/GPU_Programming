@@ -56,7 +56,7 @@ Another example given is the billboard example for molecule visualization,
 with the difference being that the vertices for the displaced billboard corners
 are not generated on the CPU, but created in the geometry shader.
 
-An example for the adjancency feature of the input is given by the application of
+An example for the adjacency feature of the input is given by the application of
 creating borders around a model:
 The input data now consists of six vertices per triangle, containing not only
 the current triangle but also the remaining vertices of the three triangles that
