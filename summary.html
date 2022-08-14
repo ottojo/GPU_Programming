@@ -189,9 +189,20 @@ Architecture</a>
 <ul>
 <li><a href="#processor-architecture"
 id="toc-processor-architecture">Processor Architecture</a></li>
+<li><a href="#thread-execution" id="toc-thread-execution">Thread
+Execution</a></li>
 <li><a href="#thread-divergence" id="toc-thread-divergence">Thread
-Divergence</a></li>
-<li><a href="#memory" id="toc-memory">Memory</a></li>
+Divergence</a>
+<ul>
+<li><a href="#predicated-instructions"
+id="toc-predicated-instructions">Predicated instructions</a></li>
+<li><a href="#voting" id="toc-voting">Voting</a></li>
+</ul></li>
+<li><a href="#memory" id="toc-memory">Memory</a>
+<ul>
+<li><a href="#shared-memory" id="toc-shared-memory">Shared
+Memory</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#compute-shader" id="toc-compute-shader">Compute
 Shader</a></li>
@@ -510,11 +521,82 @@ tessellation level).</p>
 <h2 id="shader-storage-buffer-objects">Shader Storage Buffer
 Objects</h2>
 <h1 id="gpu-architecture">GPU Architecture</h1>
+<p>GPUs have progressed from the first fixed-function architectures, to
+programmable shader stages and now unified shader execution units.
+Today’s GPUs can execute many shader instantiations and programs in
+parallel, independently of the shader stage. This is also what opened
+the door to a wide variety of general purpose GPU computing (GPGPU).</p>
 <h2 id="processor-architecture">Processor Architecture</h2>
+<p>In order to leverage the data-parallel nature of the graphics
+processing pipeline, large scale SIMT architectures are used. Processors
+consist of multiple cores with a shared fetch/decode stage and execution
+context. Multiple SIMT processors are combined into larger complexes,
+which may be repeated multiple times. The GTX 1080 for example contains
+20 “Streaming Multiprocessors”, each of which contains four
+32-times-parallel SIMT processors, resulting in a total of 2560 cores in
+the GPU.</p>
+<h2 id="thread-execution">Thread Execution</h2>
+<p>Threads are executed in <em>warps</em> of 32 threads each. This
+matches the size of one SIMT processor.</p>
 <h2 id="thread-divergence">Thread Divergence</h2>
+<p>Since all threads on the same SIMT processor execute the same
+instructions, special attention has to be paid to conditional
+branching.</p>
+<h3 id="predicated-instructions">Predicated instructions</h3>
+<p>Using this method:</p>
+<ul>
+<li>All threads execute the predicate</li>
+<li>All threads execute both branches</li>
+</ul>
+<p>The thread then selects one of the results based on the
+predicate.</p>
+<p>This is only viable if the branch is small, otherwise the performance
+cost of executing both branches is too high.</p>
+<h3 id="voting">Voting</h3>
+<p>This approach allows the threads to vote which branch to execute. If
+all threads vote for the same branch, the other branch is not
+executed.</p>
+<p>Thus, care has to be taken to avoid big branches that diverge within
+the same warp.</p>
 <h2 id="memory">Memory</h2>
+<p>Accessing memory introduces latency, for example on the order of 100
+cycles. The bandwidth between the processor and memory is also limited.
+Stalling the processor while waiting for memory worsens utilization.</p>
+<p>GPUs implement a memory hierarchy similar to CPUs:</p>
+<p>The memory closest to the cores are registers, shared memory and L1
+cache. For example, the GTX 1080 features</p>
+<ul>
+<li>256KB registers</li>
+<li>96KB shared memory</li>
+<li>48KB L1 cache</li>
+</ul>
+<p>The cache works without explicit user control and exploits spacial
+and temporal locality of data accesses. A typical cache line size is 32
+bytes, and transfer between memory and cache happens for entire cache
+lines only. Efficient usage of the cache, and proper alignment of data
+to cache lines are imperative for optimal performance, the performance
+benefit usually originates in reduced memory bandwidth requirements,
+which is often the bottleneck for processing speed.</p>
+<p>The GPU hides memory latency by oversubscribing the SM with warps,
+and executing other warps while some wait for memory. On the GTX 1080,
+each SM can be assigned 64 active warps, while it’s only able to execute
+four warps in parallel.</p>
+<p>Switching between warps is fast, and is not comparable to a context
+switch on the CPU. This does however mean that the number of warps per
+SM (GPU occupancy) is also limited by the total register usage.</p>
+<h3 id="shared-memory">Shared Memory</h3>
+<p>Shared memory is fast memory close to the cores, with the restriction
+that it is local to one streaming multiprocessor. The usual use case is
+to explicitly move a hot region of memory to shared memory before
+computation.</p>
 <h1 id="compute-shader">Compute Shader</h1>
+<blockquote>
+<p><strong><em>TODO:</em></strong> Compute Shader</p>
+</blockquote>
 <h1 id="cuda">Cuda</h1>
+<blockquote>
+<p><strong><em>TODO:</em></strong> CUDA</p>
+</blockquote>
 <h2 id="synchronization-1">Synchronization</h2>
 <h2 id="concurrency-streams">Concurrency: Streams</h2>
 </body>
