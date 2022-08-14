@@ -188,6 +188,68 @@ intersection is found, and then refines the intersection in the last (small)
 interval using binary search with few steps.
 
 ## Frame Buffers
+A frame buffer is a piece of memory on the GPU into which the scene is rendered.
+We can create custom frame buffers and render for example into a texture that
+will be used later.
+
+### Example: Shadow Maps
+This presents a method to render shadows.
+A camera is placed at the location of the light.
+The distance from the scene to this camera is then calculated and stored in a
+texture.
+When rendering the image later, the distance from a point in the scene to the
+light can be compared to the value stored in the texture.
+If the stored distance is shorter than the calculated distance, that implies
+that some geometry is between the point and the light, and thus the point is in
+shadow.
+
+To prevent aliasing, hide low shadow map resolution and creating a soft shadow
+effect, multiple samples can be taken.
+
+### Post Processing Effects
+Frame buffers can be used to apply post processing effects:
+First render onto a texture, then apply the texture onto a quad and render it
+using the post-processing effects.
+
 ### G-Buffer
+Using g-buffers, many aspects of the rendering pipeline such as lighting
+information and real-world position can be saved to multiple buffers.
+This can be the basis for more complex effects.
+
+The *deferred shading* method for example computes the illumination from the
+values in the g-buffer, which also contains diffuse and specular color.
+This means that those calculations only need to be done for parts of the scene
+that are actually visible!
+It also makes it possible to compute the lighting with multiple lights.
+Deferred shading is fast for a large number of lights.
+The number of materials however is limited, since all materials are processed
+with the same shader.
+Another disadvantage is that the lighting calculations are performed for the
+entire scene even if the light only illuminates a small part.
+
 ### Ambient Occlusion
+The ambient component in the lighting calculations simulates indirect
+illumination.
+An approximation for indirect illumination is ambient occlusion:
+A point that can not receive light from all directions will be darker.
+
+Ambient occlusion can be calculated in screen space using g-buffers, which saves
+computational resources: Pixels around the current pixel are sampled to
+approximate the amount of occlusion.
+
+An improvement can be made by only selecting pixels to sample in the half
+hemisphere defined by the surface normal.
+
+An even more accurate result can be achieved by approximating the angle of the
+largest cone coming from the current position, instead of sampling.
+
+SSAO does have some drawbacks, especially since no information is present for
+parts of the scene that are occluded:
+An object in the background may be wrongly occluded by foreground objects, even
+if they are far away.
+Removing the influence of the foreground object does not produce more
+information about occlusion by geometry between the object and background.
+
 ## SDFs
+
+> **_TODO:_** SDFs

@@ -100,4 +100,3 @@ Rigidly associating those with a single bone results in intersecting or
 stretched geometry.
 This can be solved by assigning a continuous weight instead of a rigid
 assignment for associating vertices with bones.
-
