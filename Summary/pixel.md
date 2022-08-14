@@ -90,9 +90,78 @@ Computing lighting per pixel (interpolating normals), instead of per vertex
 (interpolating lighting), produces better results.
 
 ## Texturing
-> **_TODO:_** Texturing
+Instead of using a constant material color when calculating lighting, we can
+query a texture. The texture is mapped to a coordinate space from $(0,0)$ to
+$(1,1)$ ($s t$ texture coordinates). Each vertex now has an additional $(s,t)$
+texture coordinate.
+
+### Mipmapping
+Aliasing artifacts can occur when textured objects appear on different scales
+in the scene. This is solved by storing the texture in multiple (correctly 
+down-scaled) sizes, and using a smaller texture for far away objects.
+
+### Anisotropic Filtering
+Since a square screen pixel may not map nicely to a single texture pixel, OpenGL
+provides anisotropic filtering, which queries multiple texture pixels to improve
+this behavior.
+
+### Specular Textures
+Specular lighting should also be affected by the texture.
+We introduce a separate texture that provides the color for the specular color.
+This can also be a one-channel texture just specifying how much light should be
+reflected.
+
+### Problems with Textures
+Photo textures already contain illumination information for a specific condition.
+Instead, textures should be used which only contain the material properties.
+For this to look good however, we need to simulate the lighting (such as small
+shadows) which previously was present (but static) in the texture.
+This is done by storing geometric information in the texture, such as the normal
+map in the next section.
+
+### Normal Mapping
+An additional texture is created containing the normal direction at each texel
+position.
+This allows light computation as if a more detailed surface structure was
+present, without actually modifying the geometry, by querying the normal map
+texture in the pixel shader.
+
+Care has to be taken to transform the normal from texture space into the
+coordinate system in which the light is defined (world space).
+This requires defining a new coordinate frame for each surface on which a
+texture is applied.
+The vertex data can be appended by a tangent and binormal vector defining the
+directions of the texture $s$ and $t$ axes.
 
 ### Parallax + Relief Mapping
+To correctly render textures more detailed, including occlusions within the
+texture, more effort has to be made.
+One option is displacement mapping: The idea is to use a highly tessellated
+surface, and use a height map or displacement texture to displace the vertices
+in the vertex shader.
+This works, but is not scalable since it requires generating a large amount of
+additional vertices.
+
+An alternative technique, not requiring additional vertices, is
+*Parallax Mapping*.
+This technique assumes a locally constant surface height, and chooses a
+different texel to use in the pixel shader depending on the angle between the
+surface and view vector.
+If the height at the original texel $(u,v)$ is $h$, the view vector intersects
+the point $h$ above the new texel $(u',v')$.
+
+This technique produces suboptimal results especially for shallow viewing
+angles.
+Another technique is presented by *Parallax Mapping*:
+
+In parallax mapping, the texel is always displaced by the height at the original
+texel.
+This may not be a very accurate approximation, but is free of the artifacts
+at shallow viewing angles.
+
+### More Accurate Surface Rendering using Ray Intersections
+> **_TODO:_** texturing 2
+
 ## Frame Buffers
 ### Ambient Occlusion
 ## SDFs

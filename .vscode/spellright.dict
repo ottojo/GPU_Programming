@@ -21,3 +21,6 @@ BRDF
 BRDFs
 cdot
 frac
+Mipmapping
+texel
+binormal
