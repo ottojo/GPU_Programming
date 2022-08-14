@@ -140,9 +140,9 @@ id="toc-problems-with-textures">Problems with Textures</a></li>
 Mapping</a></li>
 <li><a href="#parallax-relief-mapping"
 id="toc-parallax-relief-mapping">Parallax + Relief Mapping</a></li>
-<li><a href="#more-accurate-surface-rendering-using-ray-intersections"
-id="toc-more-accurate-surface-rendering-using-ray-intersections">More
-Accurate Surface Rendering using Ray Intersections</a></li>
+<li><a href="#iterative-methods-for-rendering-texture-geometry"
+id="toc-iterative-methods-for-rendering-texture-geometry">Iterative
+Methods for Rendering Texture Geometry</a></li>
 </ul></li>
 <li><a href="#frame-buffers" id="toc-frame-buffers">Frame Buffers</a>
 <ul>
@@ -466,11 +466,21 @@ Mapping</em>:</p>
 <p>In parallax mapping, the texel is always displaced by the height at
 the original texel. This may not be a very accurate approximation, but
 is free of the artifacts at shallow viewing angles.</p>
-<h3 id="more-accurate-surface-rendering-using-ray-intersections">More
-Accurate Surface Rendering using Ray Intersections</h3>
-<blockquote>
-<p><strong><em>TODO:</em></strong> texturing 2</p>
-</blockquote>
+<h3 id="iterative-methods-for-rendering-texture-geometry">Iterative
+Methods for Rendering Texture Geometry</h3>
+<p>Here, the true intersection between the view ray and the surface
+defined in the texture will be calculated. Compared to the previous
+examples, this correctly renders a texture based height map, but needs
+iteration to find the true texel coordinate.</p>
+<p>Implementing the intersection finding using binary search requires
+few iterations, but artifacts occur when multiple intersections of the
+surface with the view ray exist, since the initial step size is large.
+Poor performance can occur because the loop is harder to unroll than
+with a linear search. Linear search also allows parallelizing texture
+loads for consecutive accesses.</p>
+<p>A combined version performs an initial linear search until the first
+intersection is found, and then refines the intersection in the last
+(small) interval using binary search with few steps.</p>
 <h2 id="frame-buffers">Frame Buffers</h2>
 <h3 id="ambient-occlusion">Ambient Occlusion</h3>
 <h2 id="sdfs">SDFs</h2>
