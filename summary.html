@@ -129,8 +129,20 @@ id="toc-general-considerations">General Considerations</a></li>
 </ul></li>
 <li><a href="#texturing" id="toc-texturing">Texturing</a>
 <ul>
+<li><a href="#mipmapping" id="toc-mipmapping">Mipmapping</a></li>
+<li><a href="#anisotropic-filtering"
+id="toc-anisotropic-filtering">Anisotropic Filtering</a></li>
+<li><a href="#specular-textures" id="toc-specular-textures">Specular
+Textures</a></li>
+<li><a href="#problems-with-textures"
+id="toc-problems-with-textures">Problems with Textures</a></li>
+<li><a href="#normal-mapping" id="toc-normal-mapping">Normal
+Mapping</a></li>
 <li><a href="#parallax-relief-mapping"
 id="toc-parallax-relief-mapping">Parallax + Relief Mapping</a></li>
+<li><a href="#more-accurate-surface-rendering-using-ray-intersections"
+id="toc-more-accurate-surface-rendering-using-ray-intersections">More
+Accurate Surface Rendering using Ray Intersections</a></li>
 </ul></li>
 <li><a href="#frame-buffers" id="toc-frame-buffers">Frame Buffers</a>
 <ul>
@@ -393,10 +405,72 @@ triangle, allows for interpolation and smoother lighting. Computing
 lighting per pixel (interpolating normals), instead of per vertex
 (interpolating lighting), produces better results.</p>
 <h2 id="texturing">Texturing</h2>
-<blockquote>
-<p><strong><em>TODO:</em></strong> Texturing</p>
-</blockquote>
+<p>Instead of using a constant material color when calculating lighting,
+we can query a texture. The texture is mapped to a coordinate space from
+<span class="math inline">\((0,0)\)</span> to <span
+class="math inline">\((1,1)\)</span> (<span class="math inline">\(s
+t\)</span> texture coordinates). Each vertex now has an additional <span
+class="math inline">\((s,t)\)</span> texture coordinate.</p>
+<h3 id="mipmapping">Mipmapping</h3>
+<p>Aliasing artifacts can occur when textured objects appear on
+different scales in the scene. This is solved by storing the texture in
+multiple (correctly down-scaled) sizes, and using a smaller texture for
+far away objects.</p>
+<h3 id="anisotropic-filtering">Anisotropic Filtering</h3>
+<p>Since a square screen pixel may not map nicely to a single texture
+pixel, OpenGL provides anisotropic filtering, which queries multiple
+texture pixels to improve this behavior.</p>
+<h3 id="specular-textures">Specular Textures</h3>
+<p>Specular lighting should also be affected by the texture. We
+introduce a separate texture that provides the color for the specular
+color. This can also be a one-channel texture just specifying how much
+light should be reflected.</p>
+<h3 id="problems-with-textures">Problems with Textures</h3>
+<p>Photo textures already contain illumination information for a
+specific condition. Instead, textures should be used which only contain
+the material properties. For this to look good however, we need to
+simulate the lighting (such as small shadows) which previously was
+present (but static) in the texture. This is done by storing geometric
+information in the texture, such as the normal map in the next
+section.</p>
+<h3 id="normal-mapping">Normal Mapping</h3>
+<p>An additional texture is created containing the normal direction at
+each texel position. This allows light computation as if a more detailed
+surface structure was present, without actually modifying the geometry,
+by querying the normal map texture in the pixel shader.</p>
+<p>Care has to be taken to transform the normal from texture space into
+the coordinate system in which the light is defined (world space). This
+requires defining a new coordinate frame for each surface on which a
+texture is applied. The vertex data can be appended by a tangent and
+binormal vector defining the directions of the texture <span
+class="math inline">\(s\)</span> and <span
+class="math inline">\(t\)</span> axes.</p>
 <h3 id="parallax-relief-mapping">Parallax + Relief Mapping</h3>
+<p>To correctly render textures more detailed, including occlusions
+within the texture, more effort has to be made. One option is
+displacement mapping: The idea is to use a highly tessellated surface,
+and use a height map or displacement texture to displace the vertices in
+the vertex shader. This works, but is not scalable since it requires
+generating a large amount of additional vertices.</p>
+<p>An alternative technique, not requiring additional vertices, is
+<em>Parallax Mapping</em>. This technique assumes a locally constant
+surface height, and chooses a different texel to use in the pixel shader
+depending on the angle between the surface and view vector. If the
+height at the original texel <span class="math inline">\((u,v)\)</span>
+is <span class="math inline">\(h\)</span>, the view vector intersects
+the point <span class="math inline">\(h\)</span> above the new texel
+<span class="math inline">\((u&#39;,v&#39;)\)</span>.</p>
+<p>This technique produces suboptimal results especially for shallow
+viewing angles. Another technique is presented by <em>Parallax
+Mapping</em>:</p>
+<p>In parallax mapping, the texel is always displaced by the height at
+the original texel. This may not be a very accurate approximation, but
+is free of the artifacts at shallow viewing angles.</p>
+<h3 id="more-accurate-surface-rendering-using-ray-intersections">More
+Accurate Surface Rendering using Ray Intersections</h3>
+<blockquote>
+<p><strong><em>TODO:</em></strong> texturing 2</p>
+</blockquote>
 <h2 id="frame-buffers">Frame Buffers</h2>
 <h3 id="ambient-occlusion">Ambient Occlusion</h3>
 <h2 id="sdfs">SDFs</h2>
