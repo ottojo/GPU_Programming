@@ -112,6 +112,10 @@ id="toc-rasterization">Rasterization</a></li>
 <li><a href="#z-buffer" id="toc-z-buffer">Z-Buffer</a></li>
 <li><a href="#lighting" id="toc-lighting">Lighting</a>
 <ul>
+<li><a href="#types-of-light" id="toc-types-of-light">Types of
+Light</a></li>
+<li><a href="#surface-interaction" id="toc-surface-interaction">Surface
+Interaction</a></li>
 <li><a href="#lambertian-reflectance-model"
 id="toc-lambertian-reflectance-model">Lambertian Reflectance
 Model</a></li>
@@ -120,6 +124,8 @@ id="toc-phong-reflectance-model">Phong Reflectance Model</a></li>
 <li><a href="#blinn-phong-reflectance-model"
 id="toc-blinn-phong-reflectance-model">Blinn-Phong Reflectance
 Model</a></li>
+<li><a href="#general-considerations"
+id="toc-general-considerations">General Considerations</a></li>
 </ul></li>
 <li><a href="#texturing" id="toc-texturing">Texturing</a>
 <ul>
@@ -306,11 +312,90 @@ are the outputs of the previous stages.</p>
 <h2 id="g-buffer">G-Buffer</h2>
 <h2 id="z-buffer">Z-Buffer</h2>
 <h2 id="lighting">Lighting</h2>
+<h3 id="types-of-light">Types of Light</h3>
+<ul>
+<li>Directional light: Parallel light rays, used for example for the
+sun</li>
+<li>Point light: Light rays originate from single point in space</li>
+<li>Spot light: Rays originate from single point in a specific
+direction</li>
+</ul>
+<h3 id="surface-interaction">Surface Interaction</h3>
+<p>On each point on a surface, light gets refracted (entering the
+surface, changing its direction) and reflected. The roughness of a
+surface changes how much the direction of reflected light varies.
+Surface materials are roughly grouped into metals, which only reflect
+light, and non-metals which involve refraction and subsurface
+scattering. To approximate scattering, we consider two types of
+reflected light: specular and diffuse light. The specular light is
+almost entirely reflected in the same angle as the incoming light,
+depending on the surface roughness. The diffuse light exits at a more
+uniform distribution of directions.</p>
+<p>The material properties are defined by the Bidirectional Reflectance
+Distribution Function <em>BRDF</em>, <span
+class="math inline">\(f(l,v)\)</span>, taking the input and output
+directions and modeling how much light is reflected in the specified
+output direction.</p>
+<p>In the following, simple BRDFs are presented.</p>
 <h3 id="lambertian-reflectance-model">Lambertian Reflectance Model</h3>
+<p>This simulates perfectly diffuse surface, light is reflected equally
+in each direction. It models the amount of reflected light depending on
+incident angle.</p>
+<p><span class="math display">\[
+I_d = (N \cdot L) * C_d * k_d
+\]</span> With surface normal <span class="math inline">\(N\)</span>,
+light direction <span class="math inline">\(L\)</span>, light color
+<span class="math inline">\(C_d\)</span> and object color <span
+class="math inline">\(k_d\)</span>.</p>
+<p>Light attenuation is used to simulate decrease in light intensity
+depending on distance <span class="math inline">\(d\)</span> to the
+source:</p>
+<p><span class="math display">\[
+L_p = \frac{L_i}{At_c + At_l * d + At_e * d^2}
+\]</span> with constant component <span
+class="math inline">\(At_c\)</span>, linear component <span
+class="math inline">\(At_l\)</span> and exponential component <span
+class="math inline">\(At_e\)</span></p>
 <h3 id="phong-reflectance-model">Phong Reflectance Model</h3>
+<p>The Phong reflectance model adds ambient and specular lighting. The
+ambient light is simulated to be constant: <span class="math display">\[
+I_a = C_a * k_a
+\]</span></p>
+<p>The diffuse light is simulated using the Lambertian model: <span
+class="math display">\[
+I_d = (N \cdot L) * C_d * k_d
+\]</span></p>
+<p>The specular light is introduced based on the dot product between the
+view vector <span class="math inline">\(V\)</span> and the reflect
+vector (direction of reflected light) <span
+class="math inline">\(R\)</span>: <span class="math display">\[
+I_s = (V \cdot R) ^ \alpha * C_s * k_s
+\]</span> The parameter <span class="math inline">\(\alpha\)</span>
+controls the roughness of the object.</p>
+<p>A problem occurs if the angle between <span
+class="math inline">\(R\)</span> and <span
+class="math inline">\(V\)</span> is greater than 90°, leading to a
+negative value for <span class="math inline">\(V \cdot R\)</span>. This
+is solved by the Blinn-Phong model.</p>
 <h3 id="blinn-phong-reflectance-model">Blinn-Phong Reflectance
 Model</h3>
+<p>Here, the specular term is calculated using the surface normal and
+the newly introduced <span class="math inline">\(H\)</span> vector,
+instead of the view vector. The <span class="math inline">\(H\)</span>
+vector is the sum of the view- and light vector. This results in a dot
+product that is always positive: <span class="math display">\[
+I_s = (N \cdot H) ^ \alpha * C_s * k_s
+\]</span></p>
+<h3 id="general-considerations">General Considerations</h3>
+<p>The final lighting is dependent on where lighting is computed, and
+how normals are computed. Using normals per vertex, instead of per
+triangle, allows for interpolation and smoother lighting. Computing
+lighting per pixel (interpolating normals), instead of per vertex
+(interpolating lighting), produces better results.</p>
 <h2 id="texturing">Texturing</h2>
+<blockquote>
+<p><strong><em>TODO:</em></strong> Texturing</p>
+</blockquote>
 <h3 id="parallax-relief-mapping">Parallax + Relief Mapping</h3>
 <h2 id="frame-buffers">Frame Buffers</h2>
 <h3 id="ambient-occlusion">Ambient Occlusion</h3>
