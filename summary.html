@@ -102,7 +102,14 @@ id="toc-input-data-structures">Input Data Structures</a></li>
 <li><a href="#uniform-variables" id="toc-uniform-variables">Uniform
 Variables</a></li>
 <li><a href="#transformations"
-id="toc-transformations">Transformations</a></li>
+id="toc-transformations">Transformations</a>
+<ul>
+<li><a href="#perspective-projection"
+id="toc-perspective-projection">Perspective Projection</a></li>
+</ul></li>
+<li><a href="#sprites" id="toc-sprites">Sprites</a></li>
+<li><a href="#animation" id="toc-animation">Animation</a></li>
+<li><a href="#skinning" id="toc-skinning">Skinning</a></li>
 </ul></li>
 <li><a href="#pixel-shader" id="toc-pixel-shader">Pixel Shader</a>
 <ul>
@@ -280,8 +287,8 @@ associated to (vertex-)shader inputs.</p></li>
 shader (for every vertex/pixel). They are set by the CPU.</p>
 <h2 id="transformations">Transformations</h2>
 <p>Coordinate transformations are an important task of the vertex
-shader. We express transformations using homogenous coordinates to allow
-translations.</p>
+shader. We express transformations using homogeneous coordinates to
+allow translations.</p>
 <p><span class="math display">\[
 \begin{bmatrix}
 p_x * s_x + t_x \\
@@ -312,10 +319,40 @@ p&#39; = Mp \\
 \]</span> <span class="math display">\[
 n&#39;=(M^{-1})^Tn
 \]</span></p>
+<p>A similar transformation matrix can be constructed for a change of
+basis, projecting a point onto new axes. Combined with a translation
+(changing the origin), this performs a change of coordinate system.</p>
+<h3 id="perspective-projection">Perspective Projection</h3>
+<p>In order for correct perspective handling, the camera frustum is
+transformed into a cube centered at <span
+class="math inline">\((0,0,0)\)</span> with side lengths 2.</p>
 <blockquote>
-<p><strong><em>TODO:</em></strong> Change of coordinate system
-matrix</p>
+<p><strong><em>TODO:</em></strong> World view transformation#</p>
 </blockquote>
+<h2 id="sprites">Sprites</h2>
+<p>Sprites are polygons that are always rotated towards the camera. This
+is a cheap to render alternative to a complete model. Implementing
+sprites can be done by storing the central point as well as displacement
+vectors for the points making up the polygon. In the shader, these
+displacements are applied such that the polygon is facing the camera.
+Multiple variants of the sprite can be stored which show the object from
+different sides.</p>
+<h2 id="animation">Animation</h2>
+<p>The vertex shader can be used to show animations, by providing two
+vertex positions for keyframes before and after the current time, and
+configuring the vertex shader to interpolate between those and correctly
+move the vertex. This can also be used to store multiple model
+configurations (such as facial expressions) as offsets from the base
+model and <em>morphing</em> continuously between them.</p>
+<h2 id="skinning">Skinning</h2>
+<p>A common task is animating or moving some sort of skeleton with
+attached geometry. Each bone contains a transformation matrix relative
+to its parent. Those transformations can now be animated, and vertices
+which are associated to a specific bone can be moved accordingly.</p>
+<p>Problems arise for vertices near multiple bones. Rigidly associating
+those with a single bone results in intersecting or stretched geometry.
+This can be solved by assigning a continuous weight instead of a rigid
+assignment for associating vertices with bones.</p>
 <h1 id="pixel-shader">Pixel Shader</h1>
 <p>The pixel shader (fragment shader) runs after rasterization, for
 every pixel. Its output is the desired color of the pixel, the inputs
