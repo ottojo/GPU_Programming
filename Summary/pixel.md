@@ -159,8 +159,22 @@ texel.
 This may not be a very accurate approximation, but is free of the artifacts
 at shallow viewing angles.
 
-### More Accurate Surface Rendering using Ray Intersections
-> **_TODO:_** texturing 2
+### Iterative Methods for Rendering Texture Geometry
+Here, the true intersection between the view ray and the surface defined in the
+texture will be calculated.
+Compared to the previous examples, this correctly renders a texture based height
+map, but needs iteration to find the true texel coordinate.
+
+Implementing the intersection finding using binary search requires few
+iterations, but artifacts occur when multiple intersections of the surface with
+the view ray exist, since the initial step size is large.
+Poor performance can occur because the loop is harder to unroll than with a
+linear search.
+Linear search also allows parallelizing texture loads for consecutive accesses.
+
+A combined version performs an initial linear search until the first
+intersection is found, and then refines the intersection in the last (small)
+interval using binary search with few steps.
 
 ## Frame Buffers
 ### Ambient Occlusion
