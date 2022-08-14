@@ -24,7 +24,7 @@ They are set by the CPU.
 
 ## Transformations
 Coordinate transformations are an important task of the vertex shader.
-We express transformations using homogenous coordinates to allow translations.
+We express transformations using homogeneous coordinates to allow translations.
 
 $$
 \begin{bmatrix}
@@ -58,4 +58,46 @@ $$
 n'=(M^{-1})^Tn
 $$
 
-> **_TODO:_** Change of coordinate system matrix
+A similar transformation matrix can be constructed for a change of basis,
+projecting a point onto new axes.
+Combined with a translation (changing the origin), this performs a change of
+coordinate system.
+
+### Perspective Projection
+In order for correct perspective handling, the camera frustum is transformed
+into a cube centered at $(0,0,0)$ with side lengths 2.
+
+
+> **_TODO:_** World view transformation#
+
+## Sprites
+Sprites are polygons that are always rotated towards the camera.
+This is a cheap to render alternative to a complete model.
+Implementing sprites can be done by storing the central point as well as
+displacement vectors for the points making up the polygon.
+In the shader, these displacements are applied such that the polygon is facing
+the camera.
+Multiple variants of the sprite can be stored which show the object from
+different sides.
+
+## Animation
+The vertex shader can be used to show animations, by providing two vertex
+positions for keyframes before and after the current time, and configuring the
+vertex shader to interpolate between those and correctly move the vertex.
+This can also be used to store multiple model configurations (such as facial
+expressions) as offsets from the base model and *morphing* continuously between
+them.
+
+## Skinning
+A common task is animating or moving some sort of skeleton with attached
+geometry.
+Each bone contains a transformation matrix relative to its parent.
+Those transformations can now be animated, and vertices which are associated
+to a specific bone can be moved accordingly.
+
+Problems arise for vertices near multiple bones.
+Rigidly associating those with a single bone results in intersecting or
+stretched geometry.
+This can be solved by assigning a continuous weight instead of a rigid
+assignment for associating vertices with bones.
+

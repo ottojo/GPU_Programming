@@ -24,3 +24,7 @@ frac
 Mipmapping
 texel
 binormal
+bmatrix
+deduplication
+zig-zag
+keyframes
