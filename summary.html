@@ -144,11 +144,12 @@ Textures</a></li>
 id="toc-problems-with-textures">Problems with Textures</a></li>
 <li><a href="#normal-mapping" id="toc-normal-mapping">Normal
 Mapping</a></li>
-<li><a href="#parallax-relief-mapping"
-id="toc-parallax-relief-mapping">Parallax + Relief Mapping</a></li>
-<li><a href="#iterative-methods-for-rendering-texture-geometry"
-id="toc-iterative-methods-for-rendering-texture-geometry">Iterative
-Methods for Rendering Texture Geometry</a></li>
+<li><a href="#parallax-mapping" id="toc-parallax-mapping">Parallax
+Mapping</a></li>
+<li><a
+href="#iterative-methods-for-rendering-texture-geometry-relief-mapping"
+id="toc-iterative-methods-for-rendering-texture-geometry-relief-mapping">Iterative
+Methods for Rendering Texture Geometry: Relief Mapping</a></li>
 </ul></li>
 <li><a href="#frame-buffers" id="toc-frame-buffers">Frame Buffers</a>
 <ul>
@@ -496,7 +497,7 @@ texture is applied. The vertex data can be appended by a tangent and
 binormal vector defining the directions of the texture <span
 class="math inline">\(s\)</span> and <span
 class="math inline">\(t\)</span> axes.</p>
-<h3 id="parallax-relief-mapping">Parallax + Relief Mapping</h3>
+<h3 id="parallax-mapping">Parallax Mapping</h3>
 <p>To correctly render textures more detailed, including occlusions
 within the texture, more effort has to be made. One option is
 displacement mapping: The idea is to use a highly tessellated surface,
@@ -512,13 +513,13 @@ is <span class="math inline">\(h\)</span>, the view vector intersects
 the point <span class="math inline">\(h\)</span> above the new texel
 <span class="math inline">\((u&#39;,v&#39;)\)</span>.</p>
 <p>This technique produces suboptimal results especially for shallow
-viewing angles. Another technique is presented by <em>Parallax
-Mapping</em>:</p>
-<p>In parallax mapping, the texel is always displaced by the height at
+viewing angles. A different implementation is less accurate but produces
+fewer artifacts: Here, the texel is always displaced by the height at
 the original texel. This may not be a very accurate approximation, but
 is free of the artifacts at shallow viewing angles.</p>
-<h3 id="iterative-methods-for-rendering-texture-geometry">Iterative
-Methods for Rendering Texture Geometry</h3>
+<h3
+id="iterative-methods-for-rendering-texture-geometry-relief-mapping">Iterative
+Methods for Rendering Texture Geometry: Relief Mapping</h3>
 <p>Here, the true intersection between the view ray and the surface
 defined in the texture will be calculated. Compared to the previous
 examples, this correctly renders a texture based height map, but needs
