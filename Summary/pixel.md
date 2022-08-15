@@ -144,7 +144,7 @@ texture is applied.
 The vertex data can be appended by a tangent and binormal vector defining the
 directions of the texture $s$ and $t$ axes.
 
-### Parallax + Relief Mapping
+### Parallax Mapping
 To correctly render textures more detailed, including occlusions within the
 texture, more effort has to be made.
 One option is displacement mapping: The idea is to use a highly tessellated
@@ -163,14 +163,13 @@ the point $h$ above the new texel $(u',v')$.
 
 This technique produces suboptimal results especially for shallow viewing
 angles.
-Another technique is presented by *Parallax Mapping*:
-
-In parallax mapping, the texel is always displaced by the height at the original
+A different implementation is less accurate but produces fewer artifacts:
+Here, the texel is always displaced by the height at the original
 texel.
 This may not be a very accurate approximation, but is free of the artifacts
 at shallow viewing angles.
 
-### Iterative Methods for Rendering Texture Geometry
+### Iterative Methods for Rendering Texture Geometry: Relief Mapping
 Here, the true intersection between the view ray and the surface defined in the
 texture will be calculated.
 Compared to the previous examples, this correctly renders a texture based height
